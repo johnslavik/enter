@@ -43,7 +43,7 @@ source = "vcs"
 
 [tool.pytest.ini_options]
 pythonpath = "."
-addopts = ["--import-mode=importlib", "--doctest-modules"]
+addopts = ["--import-mode=importlib", "--doctest-modules", "--doctest-glob=**.md"]
 
 [tool.ruff.lint]
 exclude = ["**samples/**"]

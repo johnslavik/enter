@@ -22,6 +22,7 @@ Alternative interface to context variables for practical scenarios.
 ...     print(Foo.current.x)
 >>> f()
 3
+
 ```
 
 Works with type hints:
