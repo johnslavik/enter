@@ -2,11 +2,11 @@
 Alternative interface to context variables for practical scenarios.
 
 ```pycon
->>> from contextclass import ContextClass, enter
+>>> from contextclass import ContextLocal, enter
 >>> from dataclasses import dataclass
 
 >>> @dataclass
-... class Foo(ContextClass):
+... class Foo(ContextLocal):
 ...     x: int | None = None
 
 >>> @enter(Foo, x=1)

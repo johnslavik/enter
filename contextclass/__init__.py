@@ -9,12 +9,12 @@ class Context[C, **P]:
     """
     Internal class to create and register new current instance.
 
-    Use [`context_of`][] or subclass [`ContextClass`][] to make use of it.
+    Use [`context_of`][] or subclass [`ContextLocal`][] to make use of it.
 
     >>> from dataclasses import dataclass
 
     >>> @dataclass
-    >>> class Foo(ContextClass):
+    >>> class Foo(ContextLocal):
     ...     x: int | None = None
 
     >>> @enter(Foo, x=1)
@@ -54,7 +54,7 @@ class Context[C, **P]:
 
 
 class _ContextGetter:
-    def __get__[T: ContextClass, **P](
+    def __get__[T: ContextLocal, **P](
         self,
         instance: T | None,
         owner: Callable[P, T],
@@ -63,7 +63,7 @@ class _ContextGetter:
 
 
 class _CurrentInstanceGetter:
-    def __get__[T: ContextClass, **P](
+    def __get__[T: ContextLocal, **P](
         self,
         instance: T | None,
         owner: Callable[P, T],
