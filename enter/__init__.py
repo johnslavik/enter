@@ -66,3 +66,12 @@ class ContextClass:
     def __init_subclass__(cls, **kwargs: Any) -> None:
         kwargs["kw_only"] = True
         dataclass(cls, **kwargs)
+
+
+if __name__ == "__main__":
+
+    class Foo(ContextClass):
+        x: int | None = None
+
+    with Foo.context(x=1):
+        reveal_type(Foo.current.x)
