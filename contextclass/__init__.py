@@ -5,7 +5,7 @@ from functools import cache
 from typing import ClassVar
 
 
-class Context[C, **P]:
+class Context[T: ContextLocal, **P]:
     """
     Internal class to create and register new current instance.
 
@@ -35,11 +35,11 @@ class Context[C, **P]:
 
     """
 
-    def __init__(self, constructor: Callable[P, C], contextvar: ContextVar[C]) -> None:
+    def __init__(self, constructor: Callable[P, T], contextvar: ContextVar[T]) -> None:
         self.constructor = constructor
         self.contextvar = contextvar
 
-    def _cm(self, *__never__: P.args, **kwargs: P.kwargs) -> Generator[C]:  # noqa: ARG002
+    def _cm(self, *__never__: P.args, **kwargs: P.kwargs) -> Generator[T]:  # noqa: ARG002
         value = self.constructor(**kwargs)
         token = self.contextvar.set(value)
         try:
@@ -48,7 +48,7 @@ class Context[C, **P]:
             token.var.reset(token)
 
     @contextmanager
-    def __call__(self, *__never__: P.args, **kwargs: P.kwargs) -> Generator[C]:  # noqa: ARG002
+    def __call__(self, *__never__: P.args, **kwargs: P.kwargs) -> Generator[T]:  # noqa: ARG002
         return self._cm(**kwargs)
 
 
@@ -75,18 +75,18 @@ def current[T: ContextLocal](context_class: type[T]) -> T:
 
 
 @cache
-def context_of[T, **P](context_class: Callable[P, T]) -> Context[T, P]:
+def context_of[T: ContextLocal, **P](context_class: Callable[P, T]) -> Context[T, P]:
     auto_name = getattr(context_class, "__name__", format(context_class))
     return Context(context_class, ContextVar[T](auto_name))
 
 
 @contextmanager
-def enter[**P, C](
-    context_class: Callable[P, C],
+def enter[**P, T: Context](
+    context_class: Callable[P, T],
     /,
     *__never__: P.args,  # noqa: ARG001
     **kwargs: P.kwargs,
-) -> Generator[C]:
+) -> Generator[T]:
     return context_of(context_class)._cm(**kwargs)
 
 
