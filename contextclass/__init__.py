@@ -72,10 +72,8 @@ class _CurrentInstanceGetter:
 
 @cache
 def context_of[T, **P](context_class: Callable[P, T]) -> Context[T, P]:
-    return Context(
-        context_class,
-        ContextVar[T](getattr(context_class, "__name__", f"{context_class}")),
-    )
+    auto_name = getattr(context_class, "__name__", format(context_class))
+    return Context(context_class, ContextVar[T](auto_name))
 
 
 @contextmanager
