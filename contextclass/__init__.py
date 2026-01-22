@@ -1,7 +1,7 @@
 from collections.abc import Callable, Generator
 from contextlib import contextmanager
 from contextvars import ContextVar
-from functools import cache
+from functools import cache, partial
 from typing import ClassVar
 
 
@@ -72,6 +72,10 @@ class _CurrentInstanceGetter:
 
 def current[T: ContextLocal](context_class: type[T]) -> T:
     return context_of(context_class).contextvar.get()
+
+
+def supplier[T: ContextLocal](context_class: type[T]) -> Callable[[], T]:
+    return partial(current, context_class)
 
 
 @cache
