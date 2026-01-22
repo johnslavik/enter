@@ -1,5 +1,5 @@
 # contextclass
-Nicer interface to context variables in practical scenarios.
+Alternative interface to context variables for practical scenarios.
 
 ```pycon
 >>> class Foo(ContextClass):
