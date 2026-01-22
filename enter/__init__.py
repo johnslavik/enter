@@ -10,28 +10,45 @@ class Context[C, **P]:
     """
     Internal class to create and register new current instance.
 
-    Subclass [`ContextClass`][] to make use of it.
+    Use [`context_of`][] or subclass [`ContextClass`][] to make use of it.
 
     >>> class Foo(ContextClass):
     ...     x: int | None = None
 
-    >>> with Foo.context(x=1):
-    ...     print(Foo.current.x)
+    >>> @enter(Foo, x=1)
+    ... def x1() -> None:
+    ...     print(Foo.current.x)  # 1
+
+    >>> x1()
     1
+
+    >>> with Foo.context(x=2):
+    ...     print(Foo.current.x)
+    2
+
+    >>> @Foo.context(x=3)
+    ... def x3() -> None:
+    ...     print(Foo.current.x)
+
+    >>> x3()
+    3
     """
 
     def __init__(self, constructor: Callable[P, C], contextvar: ContextVar[C]) -> None:
         self.constructor = constructor
         self.contextvar = contextvar
 
-    @contextmanager
-    def __call__(self, *__never__: P.args, **kwargs: P.kwargs) -> Generator[C]:
+    def _cm(self, *__never__: P.args, **kwargs: P.kwargs) -> Generator[C]:
         value = self.constructor(**kwargs)
         token = self.contextvar.set(value)
         try:
             yield value
         finally:
             token.var.reset(token)
+
+    @contextmanager
+    def __call__(self, *__never__: P.args, **kwargs: P.kwargs) -> Generator[C]:
+        return self._cm(**kwargs)
 
 
 class _ContextGetter:
@@ -52,6 +69,16 @@ class _CurrentInstanceGetter:
 @cache
 def context_of[T, **P](context_class: Callable[P, T]) -> Context[T, P]:
     return Context(context_class, ContextVar[T](context_class.__name__))
+
+
+@contextmanager
+def enter[**P, C](
+    context_class: Callable[P, C],
+    /,
+    *args: P.args,
+    **kwargs: P.kwargs,
+) -> Generator[C]:
+    return context_of(context_class)._cm(**kwargs)
 
 
 @dataclass_transform(kw_only_default=True)
