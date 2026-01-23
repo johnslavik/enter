@@ -37,7 +37,7 @@ class Context[M, **P]:
             return get()
         except LookupError:
             class_name = self.model_class.__qualname__  # type: ignore[possibly-missing-attribute]
-            msg = f"expected a context_enter({class_name}(...)) prior to this call"
+            msg = f"expected a context_set({class_name}(...)) prior to this call"
             raise LookupError(msg) from None
 
     def set(self, model: M) -> ContextLifecycle[M]:
