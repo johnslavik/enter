@@ -36,7 +36,7 @@ Foo(x=3)
 >>> oops()
 Traceback (most recent call last):
   ...
-LookupError: expected a context_enter(Foo(...)) prior to this call
+LookupError: expected a context_set(Foo(...)) prior to this call
 
 ```
 
